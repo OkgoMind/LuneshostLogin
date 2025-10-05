@@ -1,15 +1,16 @@
 # Luneshost 免费容器自动化登录脚本（AI写的）
 
-## 概述
-
-Betadash 是 Lunes Host 平台的一个子域（[betadash.lunes.host](https://betadash.lunes.host/)），提供用户登录和管理功能。该自动化脚本使用 Node.js 和 Puppeteer 构建，旨在通过 GitHub Actions 实现每天自动登录 Betadash 网站，绕过手动操作和验证码挑战（如 Cloudflare Turnstile）。脚本特别适用于保持账户活跃，避免因长期不活跃（6 个月以上）而重置密码的风险。
-
-此脚本：
-
-* ​**自动化频率**​：每天 UTC 00:00（北京时间 08:00）自动运行，支持手动触发测试。
-* ​**验证码处理**​：集成 2Captcha API 自动解决 Turnstile 验证码，确保高成功率（>95%）。
-* ​**安全性**​：凭证存储在 GitHub Secrets 中，避免硬编码。
-* ​**调试友好**​：失败时生成截屏并上传为 Artifacts，便于排查。
+> ## 概述
+> 
+> Betadash 是 Lunes Host 平台的一个子域（[betadash.lunes.host](https://betadash.lunes.host/)），提供用户登录和管理功能。该自动化脚本使用 Node.js 和 Puppeteer 构建，旨在通过 GitHub Actions 实现每天自动登录 Betadash 网站，绕过手动操作和验证码挑战（如 Cloudflare Turnstile）。脚本特别适> 用于保持账户活跃，避免因长期不活跃（6 个月以上）而重置密码的风险。
+> 
+> 此脚本：
+> 
+> * ​**自动化频率**​：每天 UTC 00:00（北京时间 08:00）自动运行，支持手动触发测试。
+> * ​**验证码处理**​：集成 2Captcha API 自动解决 Turnstile 验证码，确保高成功率（>95%）。
+> * ​**安全性**​：凭证存储在 GitHub Secrets 中，避免硬编码。
+> * ​**调试友好**​：失败时生成截屏并上传为 Artifacts，便于排查。
+> * **TG通知**: 登录成功或失败时通过 Telegram Bot 发送通知。
 
 ## 适用场景
 
