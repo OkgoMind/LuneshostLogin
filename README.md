@@ -47,31 +47,30 @@
 
 ```mermaid
 graph TD
-    A[登录请求] --> B[检索向量]
-    B --> C{验证用户}
-    C -->|是| D[检索文档]
-    D --> E[生成提示]
-    E --> F{检索向量}
-    F -->|是| G[检索文档]
-    G --> H{生成响应}
-    H -->|是| I[发送响应]
-    I --> J[结束]
-    H -->|否| K[重试生成]
-    K --> H
-    F -->|否| L[默认响应]
-    L --> J
-    C -->|否| M[拒绝访问]
+    A[开始] --> B[导航登录页]
+    B --> C{等待验证码加载}
+    C -->|是| D[输入用户名密码]
+    D --> E[提取 sitekey]
+    E --> F[解决 Turnstile]
+    F --> G[提交表单]
+    G --> H{等待导航}
+    H -->|成功| I{检查登录}
+    I -->|是| J[Telegram 成功通知]
+    J --> K[结束]
+    I -->|否| L[截屏失败]
+    L --> M[Telegram 失败通知]
     M --> N[结束]
-    D -->|失败| O[错误处理]
-    O --> N
-    G -->|失败| P[备用检索]
-    P --> H
+    H -->|超时| O[错误结束]
+    C -->|否| P[验证码失败]
+    P --> Q[结束]
+    F -->|API 失败| R[重试或结束]
+    R --> O
 
-    classDef startEnd fill:#90EE90,stroke:#333,stroke-width:2px
-    classDef process fill:#E6E6FA,stroke:#333,stroke-width:2px
-    classDef decision fill:#FFFACD,stroke:#333,stroke-width:2px
-    classDef error fill:#FFB6C1,stroke:#333,stroke-width:2px
-    class A,J,N startEnd
-    class B,D,E,F,G,I,K,L process
-    class C,H decision
-    class M,O,P error
+    classDef startEnd fill:#90EE90
+    classDef process fill:#E6E6FA
+    classDef decision fill:#FFFACD
+    classDef error fill:#FFB6C1
+    class A,K,N,Q,O startEnd
+    class B,D,E,F,G,J,L,M process
+    class C,H,I decision
+    class P,R error
