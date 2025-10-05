@@ -1,37 +1,72 @@
 const puppeteer = require('puppeteer');
 
 async function login() {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ 
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',  // 避免共享内存问题
+      '--disable-gpu'  // 可选：禁用 GPU 以防兼容性问题
+    ]
+  });
   const page = await browser.newPage();
+
+  // 设置用户代理以伪装真实浏览器
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
   try {
     // 导航到登录页面
     await page.goto(process.env.WEBSITE_URL, { waitUntil: 'networkidle2' });
 
-    // 输入用户名
-    await page.type(process.env.USERNAME_SELECTOR, process.env.USERNAME);
+    // 输入 Email
+    await page.type('#email', process.env.USERNAME);
 
     // 输入密码
-    await page.type(process.env.PASSWORD_SELECTOR, process.env.PASSWORD);
+    await page.type('#password', process.env.PASSWORD);
 
-    // 点击登录按钮
-    await page.click(process.env.SUBMIT_SELECTOR);
+    // 等待 Turnstile 渲染（兼容 reCAPTCHA）
+    await page.waitForSelector('.g-recaptcha', { timeout: 10000 });
+    await page.waitForFunction('document.querySelector("iframe[src*=\'turnstile\']").contentDocument.body', { timeout: 10000 });
 
-    // 等待登录完成（假设登录后页面跳转或出现特定元素；根据网站调整）
+    // 注意：这里需要手动/服务解决 Turnstile。示例：如果使用 2Captcha，集成 API 调用。
+    // 临时：尝试点击（可能失败）
+    const turnstileFrame = await page.$('iframe[src*="turnstile"]');
+    if (turnstileFrame) {
+      const frameElement = await turnstileFrame.contentFrame();
+      if (frameElement) {
+        await frameElement.click('button');  // 尝试点击挑战按钮；实际需调整
+      }
+    }
+
+    // 等待验证码响应（假设解决后，隐藏 div 或 token 生成）
+    await page.waitForFunction(() => {
+      const widget = document.querySelector('.g-recaptcha');
+      return widget && widget.querySelector('textarea') && widget.querySelector('textarea').value;
+    }, { timeout: 30000 });  // 30s 等待解决
+
+    // 点击提交按钮
+    await page.click('button[type="submit"]');
+
+    // 等待登录完成（重定向到 /）
     await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 10000 });
 
-    // 检查登录成功（示例：检查页面标题或特定元素；请根据网站自定义）
+    // 检查登录成功（调整为实际：如 URL 变为 / 或标题包含欢迎词）
+    const currentUrl = page.url();
     const title = await page.title();
-    if (title.includes('Dashboard') || title.includes('Welcome')) {  // 替换为实际成功标志
-      console.log('登录成功！');
+    if (currentUrl.includes('/') && title.includes('Lunes Host')) {  // 假设首页标题
+      console.log('登录成功！当前页面：', currentUrl);
     } else {
-      throw new Error('登录可能失败，请检查页面内容。');
+      throw new Error(`登录可能失败。当前 URL: ${currentUrl}, 标题: ${title}`);
     }
 
     console.log('脚本执行完成。');
   } catch (error) {
+    // 调试：保存截屏
+    await page.screenshot({ path: 'login-failure.png', fullPage: true });
     console.error('登录失败：', error.message);
-    throw error;  // 在 Actions 中触发失败通知
+    console.error('截屏已保存为 login-failure.png（在 Actions artifacts 中查看）');
+    throw error;
   } finally {
     await browser.close();
   }
