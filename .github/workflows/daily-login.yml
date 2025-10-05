@@ -32,6 +32,7 @@ jobs:
           libgdk-pixbuf2.0-0
 
     - name: Run login script
+      id: login-step  # 添加 ID 以便后续引用
       run: node login.js
       env:
         WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
@@ -40,3 +41,12 @@ jobs:
         USERNAME_SELECTOR: ${{ secrets.USERNAME_SELECTOR }}
         PASSWORD_SELECTOR: ${{ secrets.PASSWORD_SELECTOR }}
         SUBMIT_SELECTOR: ${{ secrets.SUBMIT_SELECTOR }}
+      continue-on-error: true  # 即使失败也继续上传
+
+    - name: Upload failure screenshot as Artifact
+      if: always()  # 总是运行，无论成功或失败
+      uses: actions/upload-artifact@v4
+      with:
+        name: login-debug
+        path: login-failure.png  # 脚本生成的截屏路径
+        retention-days: 7  # 保留 7 天
