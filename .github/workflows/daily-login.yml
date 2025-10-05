@@ -1,0 +1,32 @@
+name: Daily Website Login
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install puppeteer
+
+    - name: Run login script
+      run: node login.js
+      env:
+        WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        USERNAME_SELECTOR: ${{ secrets.USERNAME_SELECTOR }}
+        PASSWORD_SELECTOR: ${{ secrets.PASSWORD_SELECTOR }}
+        SUBMIT_SELECTOR: ${{ secrets.SUBMIT_SELECTOR }}
