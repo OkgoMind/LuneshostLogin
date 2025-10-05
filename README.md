@@ -42,3 +42,36 @@
 |SUBMIT\_SELECTOR|button[type="submit"]|登录按钮的选择器|
 |TELEGRAM_BOT_TOKEN|123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11|您的 Bot Token|
 |TELEGRAM_CHAT_ID|123456789|您的 Chat ID|
+
+## RAG 流程图
+
+```mermaid
+graph TD
+    A[登录请求] --> B[检索向量]
+    B --> C{验证用户}
+    C -->|是| D[检索文档]
+    D --> E[生成提示]
+    E --> F{检索向量}
+    F -->|是| G[检索文档]
+    G --> H{生成响应}
+    H -->|是| I[发送响应]
+    I --> J[结束]
+    H -->|否| K[重试生成]
+    K --> H
+    F -->|否| L[默认响应]
+    L --> J
+    C -->|否| M[拒绝访问]
+    M --> N[结束]
+    D -->|失败| O[错误处理]
+    O --> N
+    G -->|失败| P[备用检索]
+    P --> H
+
+    classDef startEnd fill:#90EE90,stroke:#333,stroke-width:2px
+    classDef process fill:#E6E6FA,stroke:#333,stroke-width:2px
+    classDef decision fill:#FFFACD,stroke:#333,stroke-width:2px
+    classDef error fill:#FFB6C1,stroke:#333,stroke-width:2px
+    class A,J,N startEnd
+    class B,D,E,F,G,I,K,L process
+    class C,H decision
+    class M,O,P error
