@@ -39,4 +39,5 @@ Betadash 是 Lunes Host 平台的一个子域（[betadash.lunes.host](https://be
 |USERNAME\_SELECTOR| #email|用户名输入框CSS选择器|
 |PASSWORD\_SELECTOR|#password|密码输入框CSS选择器|
 |SUBMIT\_SELECTOR|button[type="submit"]|登录按钮的选择器|
-|CAPTCHA_API_KEY|2Captcha API Key|2Captcha API 自动解决 Turnstile|
+|TELEGRAM_BOT_TOKEN|123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11|您的 Bot Token|
+|TELEGRAM_CHAT_ID|123456789|您的 Chat ID|
