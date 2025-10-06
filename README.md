@@ -4,7 +4,7 @@
 > ![自定义图片名](https://betadash.lunes.host/static/images/Lunes.svg)
 > Betadash 是 Lunes Host 平台的一个子域（[betadash.lunes.host](https://betadash.lunes.host/)），提供用户登录和管理功能。该自动化脚本使用 Node.js 和 Puppeteer 构建，旨在通过 GitHub Actions 实现每天自动登录 Betadash 网站，绕过手动操作和验证码挑战（如 Cloudflare Turnstile）。脚本特别适> 用于保持账户活跃，避免因长期不活跃（6 个月以上）而重置密码的风险。
 > 
-> [相关链接](https://youtu.be/j1Bjrgn1jSo?si=MaRYPurajRrcDenA)
+> 
 > 
 > 此脚本：
 > 
